@@ -50,7 +50,7 @@ async function downloadByIllustrators(illustrators, callback) {
 		let info = await getDownloadListByIllustrator(illustrator);
 
 		//下载
-		await downloadIllusts(info.illusts, Path.join(config.path, info.dir), config.thread);
+		await downloadIllusts(info.illusts, Path.join(download_path, info.dir), config.thread);
 
 		//回调
 		if (typeof(callback) == 'function') callback(i);
@@ -75,7 +75,7 @@ async function getDownloadListByIllustrator(illustrator) {
 	if (exampleIllusts) {
 		let existNum = 0;
 		for (let ei of exampleIllusts) {
-			if (Fs.existsSync(Path.join(config.path, dir, ei.file))) existNum++;
+			if (Fs.existsSync(Path.join(download_path, dir, ei.file))) existNum++;
 			else illusts.push(ei);
 		}
 		if (existNum > 0) {
@@ -96,7 +96,7 @@ async function getDownloadListByIllustrator(illustrator) {
 		cnt = 0;
 		let temps = await illustrator.illusts();
 		for (let temp of temps) {
-			if (!Fs.existsSync(Path.join(config.path, dir, temp.file))) {
+			if (!Fs.existsSync(Path.join(download_path, dir, temp.file))) {
 				illusts.push(temp);
 				cnt++;
 			}
@@ -135,7 +135,7 @@ async function downloadByBookmark(me, isPrivate = false) {
 		cnt = 0;
 		let temps = await me.bookmarks(isPrivate);
 		for (let temp of temps) {
-			if (!Fs.existsSync(Path.join(config.path, dir, temp.file))) {
+			if (!Fs.existsSync(Path.join(download_path, dir, temp.file))) {
 				illusts.push(temp);
 				cnt++;
 			}
@@ -145,7 +145,7 @@ async function downloadByBookmark(me, isPrivate = false) {
 	Tools.clearProgress(processDisplay);
 
 	//下载
-	await downloadIllusts(illusts.reverse(), Path.join(config.path, dir), config.thread);
+	await downloadIllusts(illusts.reverse(), Path.join(download_path, dir), config.thread);
 }
 
 
@@ -255,7 +255,7 @@ function downloadIllusts(illusts, dldir, totalThread) {
  */
 async function getIllustratorNewDir(data) {
 	//下载目录
-	let mainDir = config.path;
+	let mainDir = download_path;
 	if (!Fs.existsSync(mainDir)) Tools.mkdirsSync(mainDir);
 	let dldir = null;
 
@@ -300,7 +300,7 @@ async function downloadByIllusts(illustJSON) {
 	for (let json of illustJSON) {
 		illusts = illusts.concat(await Illust.getIllusts(json));
 	}
-	await downloadIllusts(illusts, Path.join(config.path, 'PID'), config.thread);
+	await downloadIllusts(illusts, Path.join(download_path, 'PID'), config.thread);
 }
 
 

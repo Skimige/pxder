@@ -67,14 +67,26 @@ handleArgv()
 		await pixiv.relogin();
 
 		//开始下载
-		console.log('\nDownload Path:\t'.cyan + config.download.path.toString().yellow);
-		if (typeof config.proxy == 'string' && config.proxy.length > 0) console.log('Using Proxy:\t'.cyan + config.proxy.yellow);
-
-		if (program.follow) await pixiv.downloadFollowAll(false, program.force);
-		if (program.followPrivate) await pixiv.downloadFollowAll(true, program.force);
+		if (typeof config.proxy == 'string' && config.proxy.length > 0) console.log('\nUsing Proxy:\t'.cyan + config.proxy.yellow);
+		//先定义一次下载目录
+		global.download_path = config.download.path;
+		if (program.follow) {
+			console.log('Download Path:\t'.cyan + config.download.path.toString().yellow);
+			await pixiv.downloadFollowAll(false, program.force);
+		}
+		if (program.followPrivate) {
+			console.log('Download Path:\t'.cyan + config.download.path_sec.toString().yellow);
+			global.download_path = config.download.path_sec;
+			await pixiv.downloadFollowAll(true, program.force);
+		}
 		if (program.update) await pixiv.downloadUpdate();
-		if (program.bookmark) await pixiv.downloadBookmark();
-		if (program.bookmarkPrivate) await pixiv.downloadBookmark(true);
+		if (program.bookmark) {
+			await pixiv.downloadBookmark();
+		}
+		if (program.bookmarkPrivate) {
+			global.download_path = config.download.path_sec;
+			await pixiv.downloadBookmark(true);
+		}
 
 		if (program.uid) {
 			//得到UID
@@ -150,6 +162,7 @@ async function handleArgv() {
 			const sysProxy = getSysProxy();
 			const options = [
 				'Download path\t'.yellow + (config.download.path ? config.download.path : 'Null, please set one'.bgRed),
+				'2nd Download path\t'.yellow + (config.download.path_sec ? config.download.path_sec : 'Null, please set one'.bgRed),
 				'Download thread\t'.yellow + config.download.thread,
 				'Download timeout\t'.yellow + config.download.timeout,
 				'Auto rename\t\t'.yellow + (config.download.autoRename ? 'On' : 'Off'),
@@ -169,7 +182,15 @@ async function handleArgv() {
 					});
 					break;
 
-				case 1: //下载线程
+				case 1: //第二下载路径
+					config.download.path_sec = readline.questionPath('Please input a 2nd download path:\n'.yellow, {
+						isDirectory: true,
+						exists: null,
+						cd: false,
+					});
+					break;
+
+				case 2: //下载线程
 					config.download.thread = getStrictIntInput(
 						'Please input the number of download thread:'.yellow + ' [1-32, default is 5]\n',
 						{
@@ -180,7 +201,7 @@ async function handleArgv() {
 					);
 					break;
 
-				case 2: //下载超时
+				case 3: //下载超时
 					config.download.timeout = getStrictIntInput(
 						'Please input the seconds of download timeout:'.yellow + ' [default is 30]\n',
 						{
@@ -191,11 +212,11 @@ async function handleArgv() {
 					);
 					break;
 
-				case 3: //自动重命名
+				case 4: //自动重命名
 					config.download.autoRename = readline.keyInYNStrict('Do you want to turn on auto rename?'.yellow);
 					break;
 
-				case 4: //代理设置
+				case 5: //代理设置
 					config.proxy = readline.question(
 						'Please input your HTTP/SOCKS proxy like:\n'.yellow +
 							'  <protocol>://[user:passwd@]<ip>:<port>\n' +

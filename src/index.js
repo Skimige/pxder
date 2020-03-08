@@ -86,7 +86,7 @@ class PixivFunc {
 			console.error('\nYou must login first!'.red + '\n    Try ' + 'pxder --login'.yellow);
 			check = false;
 		}
-		if (!config.download.path) {
+		if (!config.download.path || !config.download.path_sec) {
 			check = false;
 			console.error('\nYou must set download path first!'.red + '\n    Try ' + 'pxder --setting'.yellow);
 		}
@@ -306,6 +306,7 @@ class PixivFunc {
 		//临时文件
 		const tmpJson = Path.join(configFileDir, (isPrivate ? 'private' : 'public') + '.json');
 		if (!Fs.existsSync(__config.download.path)) Fs.mkdirSync(__config.download.path);
+		if (!Fs.existsSync(__config.download.path_sec)) Fs.mkdirSync(__config.download.path_sec);
 
 		//取得关注列表
 		if (!Fs.existsSync(tmpJson) || force) {
@@ -353,7 +354,7 @@ class PixivFunc {
 	async downloadUpdate() {
 		const uids = [];
 		//得到文件夹内所有UID
-		await Tools.readDirSync(__config.download.path).then(files => {
+		await Tools.readDirSync(__download_path).then(files => {
 			for (const file of files) {
 				const search = /^\(([0-9]+)\)/.exec(file);
 				if (search) uids.push(search[1]);
@@ -383,7 +384,7 @@ class PixivFunc {
 	 */
 	async downloadByPIDs(pids) {
 		const jsons = [];
-		const exists = Fse.readdirSync(Path.join(__config.download.path, 'PID'))
+		const exists = Fse.readdirSync(Path.join(__download_path, 'PID'))
 			.map(file => {
 				const search = /^\(([0-9]+)\)/.exec(file);
 				if (search && search[1]) return search[1];
