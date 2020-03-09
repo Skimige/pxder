@@ -34,8 +34,11 @@ program
 	.option('')
 	.option('-U, --update', "update illustrators' illusts in your download path")
 	.option('')
+	.option('    --no-cf', 'download illusts from i.pximg.net instead of i-cf.pximg.net')
+	.option('')
 	.option('    --debug', 'output all error messages while running')
 	.option('    --conf-loca', 'output the location of config and exit')
+	.option('')
 	.version(pkg.version, '-v, --version')
 	.parse(process.argv);
 
