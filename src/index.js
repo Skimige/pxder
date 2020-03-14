@@ -353,8 +353,8 @@ class PixivFunc {
 	async downloadUpdate() {
 		const uids = [];
 		//得到文件夹内所有UID
-		Fse.ensureDirSync(__download_path);
-		const files = Fse.readdirSync(__download_path);
+		Fse.ensureDirSync(download_path);
+		const files = Fse.readdirSync(download_path);
 		for (const file of files) {
 			const search = /^\(([0-9]+)\)/.exec(file);
 			if (search) uids.push(search[1]);
@@ -383,7 +383,7 @@ class PixivFunc {
 	 */
 	async downloadByPIDs(pids) {
 		const jsons = [];
-		const dirPath = Path.join(__download_path, 'PID');
+		const dirPath = Path.join(download_path, 'PID');
 		Fse.ensureDirSync(dirPath);
 		const exists = Fse.readdirSync(dirPath)
 			.map(file => {
