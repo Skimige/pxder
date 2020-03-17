@@ -1,5 +1,7 @@
 # pixiv downloader
 
+这是一个分支版本，新添加的是 第二路径 特性。
+
 ![运行示例](https://i.loli.net/2018/08/20/5b7aaccfb1c4a.gif)
 
 简单写下说明（主要针对 Windows 用户）
@@ -72,15 +74,18 @@ pxder --setting
 
 ```bash
 [1] Download path     # 下载目录，必须设置
-[2] Download thread   # 下载线程数
-[3] Download timeout  # 下载超时
-[4] Auto rename       # 自动重命名（文件夹）
-[5] Proxy             # 使用代理
+[2] 2nd Download path # 第二下载目录，目前也必须设置，魔改特性
+[3] Download thread   # 下载线程数
+[4] Download timeout  # 下载超时
+[5] Auto rename       # 自动重命名（文件夹）
+[6] Proxy             # 使用代理
 ```
 
 - **下载目录**  
   请注意相对路径与绝对路径的区别，不过不用担心，输入完路径后会显示绝对路径以方便你检查  
   目录无需手动建立，下载图片的时候会自动建立
+- **第二下载目录**
+  你的非公开关注和收藏会被下载到这里；你也可以将它和下载目录设置成同一路径
 - **下载线程数**  
   即同时下载的图片数，默认为`5`，最小为`1`，最大为`32`  
   下载图片时最左侧的一列实际上就是线程编号
