@@ -1,5 +1,9 @@
 let pixiv;
 
+function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 /**
  * 插画
  *
@@ -51,6 +55,8 @@ class Illust {
 			const ugoiraParams = [id, title, illustJSON.meta_single_page.original_image_url.replace('img-original', 'img-zip-ugoira').replace(/_ugoira0\.(.*)/, '_ugoira1920x1080.zip')];
 			if (global.ugoiraMeta) {
 				try {
+					// console.log("\nUgoira detected. Sleep 1s.")
+					await sleep(1000)
 					const uDelay = await pixiv.ugoiraMetaData(id).then(ret => ret.ugoira_metadata.frames[0].delay);
 					illusts.push(new Illust(...ugoiraParams, `(${id})${fileName}@${uDelay}ms.zip`));
 				} catch (error) {
