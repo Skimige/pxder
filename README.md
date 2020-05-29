@@ -2,6 +2,8 @@
 
 这是一个分支版本，新添加的是 第二路径 特性。
 
+> 原作者：本项目因本人太懒而进入仅维护状态，暂时不会考虑任何非必要的 Feature Request
+
 ![运行示例](https://i.loli.net/2018/08/20/5b7aaccfb1c4a.gif)
 
 简单写下说明（主要针对 Windows 用户）
@@ -70,15 +72,16 @@ pxder --logout
 pxder --setting
 ```
 
-有五项设置，按下数字键选择一项进行设置，然后按照要求输入之后回车即可
+有六项设置，按下数字键选择一项进行设置
 
 ```bash
-[1] Download path     # 下载目录，必须设置
-[2] 2nd Download path # 第二下载目录，目前也必须设置，魔改特性
-[3] Download thread   # 下载线程数
-[4] Download timeout  # 下载超时
-[5] Auto rename       # 自动重命名（文件夹）
-[6] Proxy             # 使用代理
+[1] Download path           # 下载目录，必须设置
+[2] 2nd Download path       # 第二下载目录，目前也必须设置，魔改特性
+[3] Download thread         # 下载线程数
+[4] Download timeout        # 下载超时
+[5] Auto rename             # 自动重命名（文件夹）
+[6] Proxy                   # 使用代理
+[7] Direct mode             # 直连模式
 ```
 
 - **下载目录**  
@@ -103,6 +106,9 @@ pxder --setting
   
   如果输入空行则会尝试从环境变量中依次读取`all_proxy`,`https_proxy`,`https_proxy`  
   如果想完全禁止使用代理，请输入`disable`
+- **直连模式**  
+  利用域前置（Domain Fronting）绕过 SNI 审查，达到直连使用的目的  
+  启用后，将会忽略代理设置
 
 ## 说明
 
