@@ -34,10 +34,10 @@ const moment = require('moment');
 const logError = require('./logError');
 
 const BASE_URL = 'https://app-api.pixiv.net';
-const CLIENT_ID = 'KzEZED7aC0vird8jWyHM38mXjNTY';
-const CLIENT_SECRET = 'W9JZoJe00qPvJsiyCGT3CCtC6ZUtdpKpzMbNlUGP';
+const CLIENT_ID = 'MOBrBDS8blbauoSck0ZfDbtuzpyT';
+const CLIENT_SECRET = 'lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj';
 const HASH_SECRET = '28c1fdd170a5204386cb1313c7077b34f83e4aaf4aa829ce78c231e05b0bae2c';
-const filter = 'for_ios';
+const filter = 'for_android';
 
 const HOSTS = {
     'oauth.secure.pixiv.net': '210.140.131.218',
@@ -76,11 +76,11 @@ function callApi(url, options) {
 class PixivApi {
     constructor() {
         this.headers = {
-            'App-OS': 'ios',
-            'Accept-Language': 'en-us',
-            'App-OS-Version': '12.0.1',
-            'App-Version': '7.6.2',
-            'User-Agent': 'PixivIOSApp/7.6.2 (iOS 12.0.1; iPhone8,2)',
+            'App-OS': 'Android',
+            'Accept-Language': 'zh-CN',
+            'App-OS-Version': 'Android 6.0',
+            'App-Version': '5.0.166',
+            'User-Agent': 'PixivAndroidApp/5.0.155 (Android 6.0; Pixel C)',
         };
     }
 
