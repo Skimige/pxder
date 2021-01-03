@@ -80,8 +80,8 @@ handleArgv()
 		await pixiv.relogin();
 
 		// 开始下载
-		if (config.directMode) console.log('Direct Mode:\t'.cyan + 'Enabled'.yellow);
-		else if (typeof config.proxy == 'string' && config.proxy.length > 0) console.log('Using Proxy:\t'.cyan + config.proxy.yellow);
+		if (config.directMode) console.log('\nDirect Mode:\t'.cyan + 'Enabled'.yellow);
+		else if (typeof config.proxy == 'string' && config.proxy.length > 0) console.log('\nUsing Proxy:\t'.cyan + config.proxy.yellow);
 		// 先定义一次下载目录
 		global.download_path = config.download.path;
 		if (program.follow) {
@@ -95,9 +95,11 @@ handleArgv()
 		}
 		if (program.update) await pixiv.downloadUpdate();
 		if (program.bookmark) {
+			console.log('Download Path:\t'.cyan + config.download.path.toString().yellow);
 			await pixiv.downloadBookmark();
 		}
 		if (program.bookmarkPrivate) {
+			console.log('Download Path:\t'.cyan + config.download.path_sec.toString().yellow);
 			global.download_path = config.download.path_sec;
 			await pixiv.downloadBookmark(true);
 		}

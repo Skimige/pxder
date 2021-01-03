@@ -113,7 +113,7 @@ async function getDownloadListByIllustrator(illustrator) {
 async function downloadByBookmark(me, isPrivate = false) {
 	// 得到画师下载目录
 	const dir = '[bookmark] ' + (isPrivate ? 'Private' : 'Public');
-	const dldir = Path.join(config.path, dir);
+	const dldir = Path.join(download_path, dir);
 	const ugoiraDir = new UgoiraDir(dldir);
 	const illustExists = file => (file.endsWith('.zip') ? ugoiraDir.existsSync(file) : Fse.existsSync(Path.join(dldir, file)));
 
