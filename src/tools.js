@@ -33,10 +33,10 @@ async function download(dirpath, filename, url, axiosOption) {
 	const response = await Axios.create(axiosOption).get(global.cf ? url.replace('i.pximg.net', 'i-cf.pximg.net') : url.replace('i-cf.pximg.net', 'i.pximg.net'));
 	const data = response.data;
 
-	return new Promise((reslove, reject) => {
+	return new Promise((resolve, reject) => {
 		data.pipe(Fse.createWriteStream(Path.join(dirpath, filename)));
 		data.on('end', () => {
-			reslove(response);
+			resolve(response);
 		});
 		data.on('error', reject);
 	});
@@ -50,7 +50,24 @@ function readJsonSafely(path, defaultValue) {
 	return defaultValue;
 }
 
+class UgoiraDir {
+	constructor(dirpath) {
+		this.files = new Set(
+			Fse.existsSync(dirpath)
+				? Fse.readdirSync(dirpath)
+						.filter(file => file.endsWith('.zip'))
+						.map(file => file.replace(/@\d+?ms/g, ''))
+				: []
+		);
+	}
+
+	existsSync(file) {
+		return this.files.has(file.replace(/@\d+?ms/g, ''));
+	}
+}
+
 module.exports = {
+	UgoiraDir,
 	showProgress,
 	clearProgress,
 	download,
