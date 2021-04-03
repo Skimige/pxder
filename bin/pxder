@@ -259,12 +259,18 @@ async function handleArgv() {
           break;
 
 				case 1: // 第二下载路径
-					config.download.path_sec = readline.questionPath('Please input a 2nd download path:\n'.yellow, {
-						isDirectory: true,
-						exists: null,
-						cd: false,
-					});
-					break;
+          const initialSec = config.download.path_sec || '';
+					config.download.path_sec =
+          (
+            await prompts({
+              type: 'text',
+              name: 'value',
+              message: 'Please input a download path'.yellow,
+              format: v => Path.resolve(v.trim()),
+              initial: initialSec,
+            })
+          ).value || initialSec;
+        break;
 
 				case 2: // 下载线程
 					config.download.thread = getStrictIntInput(
