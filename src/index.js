@@ -6,11 +6,11 @@ const Illustrator = require('./illustrator');
 const Fse = require('fs-extra');
 const Path = require('path');
 const Tools = require('./tools');
-const { getProxyAgent, getSysProxy } = require('./proxy');
+const { getProxyAgent, delSysProxy } = require('./proxy');
 const { Agent } = require('https');
 
-const configFileDir = require('appdata-path').getAppDataPath('pxder');
-const configFile = Path.join(configFileDir, 'config.json');
+const CONFIG_FILE_DIR = require('appdata-path').getAppDataPath('pxder');
+const CONFIG_FILE = Path.resolve(CONFIG_FILE_DIR, 'config.json');
 
 const defaultConfig = {
   download: {
@@ -35,8 +35,8 @@ class PixivFunc {
    * @memberof PixivFunc
    */
   static initConfig(forceInit = false) {
-    Fse.ensureDirSync(configFileDir);
-    if (!Fse.existsSync(configFile) || forceInit) Fse.writeJSONSync(configFile, defaultConfig);
+    Fse.ensureDirSync(CONFIG_FILE_DIR);
+    if (!Fse.existsSync(CONFIG_FILE) || forceInit) Fse.writeJSONSync(CONFIG_FILE, defaultConfig);
   }
 
   /**
@@ -50,7 +50,7 @@ class PixivFunc {
     PixivFunc.initConfig();
     const config = (() => {
       try {
-        return Fse.readJsonSync(configFile);
+        return Fse.readJsonSync(CONFIG_FILE);
       } catch (error) {}
       return defaultConfig;
     })();
@@ -69,7 +69,8 @@ class PixivFunc {
    * @memberof PixivFunc
    */
   static writeConfig(config) {
-    Fse.writeJsonSync(configFile, config);
+    Fse.ensureDirSync(CONFIG_FILE_DIR);
+    Fse.writeJsonSync(CONFIG_FILE, config);
   }
 
   /**
@@ -83,12 +84,12 @@ class PixivFunc {
   static checkConfig(config = PixivFunc.readConfig()) {
     let check = true;
     if (!config.refresh_token) {
-      console.error('\nYou must login first!'.red + '\n    Try ' + 'pxder --login'.yellow);
+      console.error('\nYou must login first!'.red + '\n  Try ' + 'pxder --login'.yellow);
       check = false;
     }
     if (!config.download.path || !config.download.path_sec) {
       check = false;
-      console.error('\nYou must set download path first!'.red + '\n    Try ' + 'pxder --setting'.yellow);
+      console.error('\nYou must set download path first!'.red + '\n  Try ' + 'pxder --setting'.yellow);
     }
     return check;
   }
@@ -102,7 +103,7 @@ class PixivFunc {
    */
   static applyConfig(config = PixivFunc.readConfig()) {
     __config = config;
-    config.download.tmp = Path.join(configFileDir, 'tmp');
+    config.download.tmp = Path.join(CONFIG_FILE_DIR, 'tmp');
     Downloader.setConfig(config.download);
     PixivFunc.applyProxyConfig(config);
   }
@@ -115,30 +116,13 @@ class PixivFunc {
    * @memberof PixivFunc
    */
   static applyProxyConfig(config = PixivFunc.readConfig()) {
-    if (config.directMode) {
-      global.p_direct = true;
-      PixivApi.setAgent(
-        new Agent({
-          rejectUnauthorized: false,
-          servername: '',
-        })
-      );
-    } else {
-      const proxy = config.proxy;
-      const sysProxy = getSysProxy();
-      // if config has no proxy and env has, use it
-      const agent = proxy === 'disable' ? null : getProxyAgent(proxy) || getProxyAgent(sysProxy);
-      // fix OAuth may fail if env has set the http proxy
-      if (sysProxy) {
-        delete process.env.all_proxy;
-        delete process.env.http_proxy;
-        delete process.env.https_proxy;
-      }
-      if (agent) {
-        Downloader.setAgent(agent);
-        PixivApi.setAgent(agent);
-        global.proxyAgent = agent;
-      }
+    const agent = getProxyAgent(config.proxy);
+    // fix OAuth may fail
+    delSysProxy();
+    if (agent) {
+      Downloader.setAgent(agent);
+      PixivApi.setAgent(agent);
+      global.proxyAgent = agent;
     }
   }
 
@@ -154,7 +138,7 @@ class PixivFunc {
     // 登录
     const pixiv = new PixivApi();
     await pixiv.tokenRequest(code, code_verifier);
-    // 获取refresh_token
+    // 获取 refresh_token
     const refresh_token = pixiv.authInfo().refresh_token;
     // 更新配置
     const conf = PixivFunc.readConfig();
@@ -190,12 +174,12 @@ class PixivFunc {
     // 检查配置
     const refresh_token = PixivFunc.readConfig().refresh_token;
     if (!refresh_token) return false;
-    // 刷新token
+    // 刷新 token
     this.pixiv = new PixivApi();
     await this.pixiv.refreshAccessToken(refresh_token);
     Illustrator.setPixiv(this.pixiv);
     Illust.setPixiv(this.pixiv);
-    // 定时刷新token
+    // 定时刷新 token
     const p = this.pixiv;
     this.reloginInterval = setInterval(() => {
       p.refreshAccessToken(refresh_token);
@@ -329,7 +313,7 @@ class PixivFunc {
     let illustrators = null;
 
     // 临时文件
-    const tmpJson = Path.join(configFileDir, (isPrivate ? 'private' : 'public') + '.json');
+    const tmpJson = Path.join(CONFIG_FILE_DIR, (isPrivate ? 'private' : 'public') + '.json');
     const tmpJsonExist = Fse.existsSync(tmpJson);
     Fse.ensureDirSync(__config.download.path);
     Fse.ensureDirSync(__config.download.path_sec);
@@ -348,6 +332,7 @@ class PixivFunc {
           })
         );
       });
+      Fse.ensureDirSync(CONFIG_FILE_DIR);
       Fse.writeJSONSync(tmpJson, follows);
     }
 
@@ -364,6 +349,7 @@ class PixivFunc {
     // 开始下载
     await Downloader.downloadByIllustrators(illustrators, () => {
       follows.shift();
+      Fse.ensureDirSync(CONFIG_FILE_DIR);
       Fse.writeJSONSync(tmpJson, follows);
     });
 

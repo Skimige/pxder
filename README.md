@@ -12,7 +12,7 @@
 
 ## 准备
 
-首先你需要先安装 Node.js  
+首先你需要先安装 Node.js >= 16
 
 ### Windows / Mac
 
@@ -22,15 +22,15 @@
 
 ```bash
 # Ubuntu
-curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
 # Debian
-curl -sL https://deb.nodesource.com/setup_12.x | bash -
+curl -sL https://deb.nodesource.com/setup_16.x | bash -
 apt-get install -y nodejs
 
 # Centos
-curl -sL https://rpm.nodesource.com/setup_12.x | bash -
+curl -sL https://rpm.nodesource.com/setup_16.x | bash -
 yum install -y nodejs
 ```
 
@@ -58,7 +58,19 @@ npm uninstall -g pxder
 pxder --login
 ```
 
-正常情况下应该会自动弹出浏览器访问一个授权页面，如果没有的话请手动打开“Login URL”，不要急着登录或授权，按以下步骤操作：
+#### Windows
+
+正常情况下应该会自动弹出浏览器访问一个登录授权页面，如果没有的话请手动打开“Login URL”，操作下去即可
+
+登录成功时浏览器会弹出如下图所示的一个对话框，选择“打开”即可，这时 pxder 应该会显示登录成功
+
+![打开应用](https://i.loli.net/2021/02/13/1nYi8Vvjf9TkcuP.png)
+
+如果你的体验与上述情况不一致，请使用 `pxder --login --no-protocol` 命令进行登录，并参考下面的“其他系统”部分进行操作
+
+#### 其他系统
+
+正常情况下应该会自动弹出浏览器访问一个登录授权页面，如果没有的话请手动打开“Login URL”，不要急着登录或授权，按以下步骤操作：
 
 1. 按下 <kbd>F12</kbd> 打开“开发者工具”，切换到“Network”选项卡，勾选“Preserve log”
 2. 进行登录或授权操作，最终会进入一个空白页面
@@ -66,7 +78,7 @@ pxder --login
 
 以上步骤尽量快速完成，太慢的话验证可能会过期
 
-![图示](https://i.loli.net/2021/02/12/jGr1nyMUsxKwTXh.png)
+![开发者工具](https://i.loli.net/2021/02/12/jGr1nyMUsxKwTXh.png)
 
 ### 登出
 
@@ -100,7 +112,6 @@ pxder --setting
 [4] Download timeout        # 下载超时
 [5] Auto rename             # 自动重命名（文件夹）
 [6] Proxy                   # 使用代理
-[7] Direct mode             # 直连模式
 ```
 
 - **下载目录**  
@@ -123,11 +134,12 @@ pxder --setting
   - `http://user:passwd@127.0.0.1:1080`
   - `socks://127.0.0.1:1080`（如果你使用小飞机则直接填这个，除非你改过本地端口）
   
-  如果输入空行则会尝试从环境变量中依次读取 `all_proxy` `https_proxy` `https_proxy`  
+  如果输入空行则会尝试从环境变量中依次读取 `all_proxy` `https_proxy` `http_proxy`（也包含全大写的环境变量）  
   如果想完全禁止使用代理，请输入 `disable`
 - **直连模式**  
-  利用域前置（Domain Fronting）绕过 SNI 审查，达到直连使用的目的  
-  直连模式不能和代理同时使用
+  ~~利用域前置（Domain Fronting）绕过 SNI 审查，达到直连使用的目的~~  
+  ~~直连模式不能和代理同时使用~~  
+  已被移除，不再维护，请使用其他工具代替，例如 [Watt Toolkit](https://steampp.net/)
 
 ## 说明
 
@@ -249,9 +261,7 @@ pxder -p 70593670,70594912,70595516
   下载动图时不请求其元数据，在下列情况下会有帮助
   1. 对动图的帧间隔信息无所谓，不请求可以节省大量解析时间
   2. 画师是专门画动图的，几百张动图解析起来实在是慢，并且动图太多可能导致达到 API 调用速率限制
-- `--no-cf`  
-  从旧的资源域名 `i.pximg.net` 下载插画，而不是新的套了 CF 的 `i-cf.pximg.net`
 - `--debug`  
   出错时输出详细的错误信息，如果你发现了 bug 想要提 issue，请尽量附上加了该参数时的错误日志
-- `--conf-loca`  
+- `--output-config-dir`  
   输出 pxder 的配置存放路径
